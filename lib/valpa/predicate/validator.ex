@@ -1,6 +1,18 @@
 defmodule Valpa.Predicate.Validator do
   @moduledoc """
-  Functions that return boolean
+  Built-in predicate functions for Valpa validators.
+
+  All predicates return `true` or `false`, making them useful on their own when full validation pipelines are unnecessary.
+
+  ## Examples
+
+  ```elixir
+  Valpa.Predicate.Validator.integer(5)
+  # => true
+
+  Valpa.Predicate.Validator.integer("not a number")
+  # => false
+  ```
   """
   use Valpa.Predicate.MaybeGenerator
 

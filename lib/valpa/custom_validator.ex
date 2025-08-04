@@ -9,17 +9,20 @@ defmodule Valpa.CustomValidator do
 
   Example:
 
-    defmodule MyApp.Validators.PositiveInteger do
-      @behaviour Valpa.CustomValidator
+  ```
+  defmodule MyApp.Validators.PositiveInteger do
+    @behaviour Valpa.CustomValidator
 
-      def validate(val) when is_integer(val) and val > 0, do: :ok
-      def validate(val), do:
-        {:error, Valpa.Error.new(%{
-          validator: :positive_integer,
-          value: val,
-          criteria: "> 0"
-        })}
-    end
+    @impl true
+    def validate(val) when is_integer(val) and val > 0, do: :ok
+    def validate(val), do:
+      {:error, Valpa.Error.new(%{
+        validator: :positive_integer,
+        value: val,
+        criteria: "> 0"
+      })}
+  end
+  ```
   """
 
   @callback validate(term) :: :ok | {:error, Valpa.Error.t()}
