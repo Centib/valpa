@@ -24,6 +24,11 @@
 - Macro-based generation of validation functions from predicate logic for DRY code.
 - Proper error trace capturing for better debugging.
 
-For future releases: planned improvements include more validators, schema integration, and improved error messaging.
+For future releases: planned improvements include:
+
+- More validators and richer predicate coverage.
+- Schema integration.
+- Improved error messaging.
+- Proper `@spec` annotations and detailed documentation for every validation function.
 
 *Created and maintained by [Centib](https://github.com/Centib).*

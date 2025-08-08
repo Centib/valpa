@@ -8,15 +8,16 @@
 
 Valpa provides simple, reusable validation functions for individual values or relationships between fields in a map or struct.
 
-## Key Features
+## Why?
 
-- Works with raw values, `{:ok, _}`, or `{:error, _}` in pipelines
-- Built-in short-circuit error propagation — stops on first failure
-- No schemas required
-- Validates maps, structs, or plain values
-- Optional and required variants for all validators
-- Extensible with custom validators
-- Returns detailed Valpa.Error structs, ideal for matching, logging, or debugging
+- **Pipeline-friendly** — validate values, `{:ok, _}`, or `{:error, _}` directly in Elixir pipelines.
+- **No schemas required** — works with plain maps, structs, or raw values.
+- **Optional (`maybe_`) and required variants** for all validators.
+- **Built-in validators** for numbers, strings, booleans, lists, maps, and more.
+- **List and map content checks** — uniqueness, value sets, key inclusion/exclusion.
+- **Custom validators** — easily extend with your own rules.
+- **Detailed errors** — structured output with optional stacktrace for debugging.
+- **Predicate functions** — standalone checks returning `true` or `false`.
 
 ## Installation
 
@@ -43,8 +44,8 @@ Let’s say you need to validate a person struct:
 ```elixir
 defmodule Person do
   defstruct [
-    :name, :age, :height, :money, :hasHat, :won, :lose,
-    :diceRolls, :hatColor, :car, :bike, :school, :work
+    :name, :age, :height, :money, :has_hat, :won, :lose,
+    :dice_rolls, :hat_color, :car, :bike, :school, :work
   ]
 
   def validate(p) do
@@ -53,12 +54,12 @@ defmodule Person do
     |> Valpa.integer(:age)
     |> Valpa.maybe_float(:height)
     |> Valpa.decimal(:money)
-    |> Valpa.boolean(:hasHat)
+    |> Valpa.boolean(:has_hat)
     |> Valpa.integer(:won)
     |> Valpa.integer(:lose)
     |> Valpa.map_compare_int_keys({:>, :won, :lose})
-    |> Valpa.list_of_type(:diceRolls, :integer)
-    |> Valpa.value_of_values(:hatColor, [:RED, :GREEN, :BLUE])
+    |> Valpa.list_of_type(:dice_rolls, :integer)
+    |> Valpa.value_of_values(:hat_color, [:RED, :GREEN, :BLUE])
     |> Valpa.maybe_value_or_uniq_list_of_values(:car, [:BMW, :AUDI, :FORD])
     |> Valpa.maybe_uniq_list_of_type(:bike, :string)
     |> Valpa.map_inclusive_keys([:car, :bike])
@@ -79,11 +80,11 @@ defmodule Bernard do
       age: 34,
       height: 183.5,
       money: Decimal.new("53.8"),
-      hasHat: true,
+      has_hat: true,
       won: 5,
       lose: 3,
-      diceRolls: [1, 4, 4, 5, 2, 3],
-      hatColor: :GREEN,
+      dice_rolls: [1, 4, 4, 5, 2, 3],
+      hat_color: :GREEN,
       car: :FORD,
       bike: ["Old", "Electric"],
       school: "MIT"
@@ -131,6 +132,10 @@ Validators come in two variants:
 Also available for types: `string`, `float`, `decimal`, `boolean`, `list_of_type`, `value_of_values`, etc.
 
 ## Custom Validators
+Valpa supports custom validation in two ways:
+
+- **Module-based validation** via `Valpa.Custom.validator`
+- **Function-based validation** via `Valpa.Custom.validate`
 
 ### Option 1: Custom validator module (on field)
 
@@ -144,7 +149,8 @@ defmodule DiceRolls do
 end
 
 # In validation:
-|> Valpa.Custom.validator(:diceRolls, DiceRolls)
+# ...
+|> Valpa.Custom.validator(:dice_rolls, DiceRolls)
 ```
 
 ### Option 2: Custom validator module (on full struct)
@@ -158,6 +164,7 @@ defmodule WonLose do
   end
 end
 
+# ...
 |> Valpa.Custom.validator(WonLose)
 ```
 
@@ -170,6 +177,7 @@ defmodule FieldsSumEqualsTen do
   end
 end
 
+# ...
 |> Valpa.Custom.validate(&FieldsSumEqualsTen.validate(&1, :age, :won))
 ```
 
