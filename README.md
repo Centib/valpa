@@ -132,6 +132,7 @@ Validators come in two variants:
 Also available for types: `string`, `float`, `decimal`, `boolean`, `list_of_type`, `value_of_values`, etc.
 
 ## Custom Validators
+
 Valpa supports custom validation in two ways:
 
 - **Module-based validation** via `Valpa.Custom.validator`
@@ -193,6 +194,29 @@ Errors are returned as `%Valpa.Error{}` with fields:
 - `:__trace__` — stacktrace, shown only in dev/test
 
 > See [`Valpa.Error`](`Valpa.Error`) for full structure and how to build custom errors.
+
+## Stacktrace Configuration
+
+Valpa can include stacktraces in `%Valpa.Error{}` for debugging.
+
+- **Default behavior:**
+
+  - `:dev` and `:test` → stacktraces included
+  - `:prod` → stacktraces omitted
+
+- **Optional override:**  
+  If you want to change this behavior, add the following to your **application config**:
+
+```elixir
+# enable stacktraces (for dev/test or debugging)
+config :valpa, :stacktrace, true
+
+# disable stacktraces (recommended for prod)
+config :valpa, :stacktrace, false
+```
+
+> ⚠️ You usually **don’t have to set this** — Valpa applies safe defaults automatically.
+> Stacktraces are mainly for debugging and internal error inspection; in production they are hidden by default.
 
 ## Predicate Functions
 

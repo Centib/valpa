@@ -2,7 +2,9 @@ defmodule Valpa.Error do
   @moduledoc """
   ### Error Handling
 
-  Valpa returns detailed error structs on validation failure. All errors use the `Valpa.Error` struct, which contains rich metadata and stacktrace info for debugging and logging.
+  Valpa returns detailed error structs on validation failure. All errors use
+  the `Valpa.Error` struct, which contains rich metadata. Optionally, a stacktrace
+  may be included for debugging purposes.
 
   #### `Valpa.Error` structure
 
@@ -16,6 +18,25 @@ defmodule Valpa.Error do
     __trace__: [...]           # Internal trace, used for error reporting
   }
   ```
+
+  #### Stacktrace configuration
+
+  By default, stacktraces are:
+
+  * enabled in `:dev` and `:test`
+  * disabled in `:prod`
+
+  You can override this in your application config if desired:
+
+  ```elixir
+  # config/config.exs
+  config :valpa, :stacktrace, true
+
+  # config/prod.exs
+  config :valpa, :stacktrace, false
+  ```
+
+  > ⚠️ You do **not have to set this** — safe defaults are applied automatically.
 
   #### Constructing Errors
 
@@ -89,7 +110,27 @@ defmodule Valpa.Error do
   end
 
   def new(fields) do
-    %{struct(__MODULE__, fields) | __trace__: capture_trace()}
+    if stacktrace_enabled?() do
+      %{struct(__MODULE__, fields) | __trace__: capture_trace()}
+    else
+      struct(__MODULE__, fields)
+    end
+  end
+
+  defp stacktrace_enabled? do
+    Application.get_env(:valpa, :stacktrace, default_stacktrace?())
+  end
+
+  defp default_stacktrace? do
+    if Code.ensure_loaded?(Mix) do
+      case Mix.env() do
+        :dev -> true
+        :test -> true
+        _ -> false
+      end
+    else
+      false
+    end
   end
 
   def at(%__MODULE__{} = error, field) do
