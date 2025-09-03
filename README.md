@@ -195,28 +195,21 @@ Errors are returned as `%Valpa.Error{}` with fields:
 
 > See [`Valpa.Error`](`Valpa.Error`) for full structure and how to build custom errors.
 
-## Stacktrace Configuration
+## Stacktrace (Quick Info)
 
-Valpa can include stacktraces in `%Valpa.Error{}` for debugging.
+Valpa errors can include stacktraces for debugging.
 
-- **Default behavior:**
+- **Dev/Test:** stacktraces included
+- **Prod:** stacktraces hidden
 
-  - `:dev` and `:test` → stacktraces included
-  - `:prod` → stacktraces omitted
-
-- **Optional override:**  
-  If you want to change this behavior, add the following to your **application config**:
+**Override defaults (optional):**
 
 ```elixir
-# enable stacktraces (for dev/test or debugging)
-config :valpa, :stacktrace, true
-
-# disable stacktraces (recommended for prod)
-config :valpa, :stacktrace, false
+config :valpa, :stacktrace, true  # force stacktraces
+config :valpa, :stacktrace, false # hide stacktraces
 ```
 
-> ⚠️ You usually **don’t have to set this** — Valpa applies safe defaults automatically.
-> Stacktraces are mainly for debugging and internal error inspection; in production they are hidden by default.
+> ⚠️ Safe defaults applied automatically — you usually don’t need to change anything.
 
 ## Predicate Functions
 
