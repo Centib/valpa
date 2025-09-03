@@ -1,7 +1,7 @@
 # Valpa
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
-[![Hex.pm](https://img.shields.io/hexpm/v/valpa.svg)](https://hex.pm/packages/valpa)
+[![Hex.pm](https://img.shields.io/hexpm/v/valpa/0.1.1.svg)](https://hex.pm/packages/valpa)
 [![Documentation](https://img.shields.io/badge/documentation-gray)](https://hexdocs.pm/valpa/)
 
 **Valpa** is a composable validation library for Elixir. It works with raw values, `{:ok, _}`, or `{:error, _}` tuples in pipelines. It offers pipelined field validation, automatic error propagation, and structured error reporting.
@@ -26,7 +26,7 @@ Add `:valpa` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:valpa, "~> 0.1.0"}
+    {:valpa, "~> 0.1.1"}
   ]
 end
 ```
