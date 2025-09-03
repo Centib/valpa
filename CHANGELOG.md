@@ -1,5 +1,38 @@
 # Changelog
 
+## v0.1.1 (2025-09-03)
+
+### Changed
+
+* `Valpa.Error` now respects runtime configuration for stacktrace inclusion:
+
+  * Stacktraces are **enabled by default** in `:dev` and `:test`.
+  * Stacktraces are **disabled by default** in `:prod`.
+  * Users can override via application config:
+
+    ```elixir
+    config :valpa, :stacktrace, true  # force stacktraces
+    config :valpa, :stacktrace, false # disable stacktraces
+    ```
+
+* `Valpa.Error.new/1` is runtime-safe and uses `Application.get_env/3` instead of `compile_env`, ensuring correct behavior in releases.
+
+* `__trace__` is now optional and hidden in production by default for safer error reporting.
+
+### Documentation
+
+* Updated module documentation for `Valpa.Error` explaining:
+
+  * Stacktrace defaults per environment.
+  * How to override via user config.
+  * Safe defaults for library consumers.
+* README updated with a **stacktrace configuration section** for clarity.
+
+### Development
+
+* Refactored `Valpa.Error` to make stacktrace capture runtime-safe and configurable.
+* Improved dev/test experience with stacktraces while keeping production errors clean.
+
 ## v0.1.0 (2025-08-04)
 
 ### Added
