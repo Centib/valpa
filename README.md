@@ -26,7 +26,7 @@ Add `:valpa` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:valpa, "~> 0.1.1"}
+    {:valpa, "~> 0.1.2"}
   ]
 end
 ```
