@@ -230,12 +230,120 @@ defmodule Valpa.ValpaMaybeTest do
     end
   end
 
-  test "decimal/1" do
-    va = Decimal.new("3.14")
-    assert Valpa.maybe_decimal(va) == ok(va)
-    va = nil
-    assert Valpa.maybe_decimal(va) == ok(va)
+  describe "decimal validations" do
+    test "decimal/1" do
+      va = Decimal.new("3.14")
+      assert Valpa.maybe_decimal(va) == ok(va)
+      va = nil
+      assert Valpa.maybe_decimal(va) == ok(va)
 
-    assert_error(Valpa.maybe_decimal(3.14), error(:maybe_decimal, 3.14))
+      assert_error(Valpa.maybe_decimal(3.14), error(:maybe_decimal, 3.14))
+    end
+
+    test "maybe_decimal_in_range_inclusive/2" do
+      va = Decimal.new("5")
+
+      assert Valpa.maybe_decimal_in_range_inclusive(va, %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(va)
+
+      assert Valpa.maybe_decimal_in_range_inclusive(Decimal.new("10"), %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(Decimal.new("10"))
+
+      assert Valpa.maybe_decimal_in_range_inclusive(Decimal.new("7.5"), %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(Decimal.new("7.5"))
+
+      va = nil
+
+      assert Valpa.maybe_decimal_in_range_inclusive(va, %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(nil)
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_inclusive(Decimal.new("4.9"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_inclusive, Decimal.new("4.9"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_inclusive(Decimal.new("10.1"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_inclusive, Decimal.new("10.1"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+    end
+
+    test "maybe_decimal_in_range_exclusive/2" do
+      assert Valpa.maybe_decimal_in_range_exclusive(Decimal.new("7.5"), %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(Decimal.new("7.5"))
+
+      va = nil
+
+      assert Valpa.maybe_decimal_in_range_exclusive(va, %{
+               min: Decimal.new("5"),
+               max: Decimal.new("10")
+             }) == ok(nil)
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_exclusive(Decimal.new("5"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_exclusive, Decimal.new("5"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_exclusive(Decimal.new("10"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_exclusive, Decimal.new("10"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_exclusive(Decimal.new("4.9"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_exclusive, Decimal.new("4.9"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+
+      assert_error(
+        Valpa.maybe_decimal_in_range_exclusive(Decimal.new("10.1"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        }),
+        error(:maybe_decimal_in_range_exclusive, Decimal.new("10.1"), %{
+          min: Decimal.new("5"),
+          max: Decimal.new("10")
+        })
+      )
+    end
   end
 end

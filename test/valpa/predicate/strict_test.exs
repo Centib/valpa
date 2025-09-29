@@ -200,4 +200,54 @@ defmodule Valpa.Predicate.StrictTest do
     refute Validator.decimal(42.0)
     refute Validator.decimal("42.0")
   end
+
+  # Test decimal_in_range_inclusive/2
+  test "decimal_in_range_inclusive returns true when value is within or equal to bounds" do
+    assert Validator.decimal_in_range_inclusive(Decimal.new("5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.decimal_in_range_inclusive(Decimal.new("10"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.decimal_in_range_inclusive(Decimal.new("7.5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  test "decimal_in_range_inclusive returns false when value is outside bounds" do
+    refute Validator.decimal_in_range_inclusive(Decimal.new("4.9"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.decimal_in_range_inclusive(Decimal.new("10.1"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  # Test decimal_in_range_exclusive/2
+  test "decimal_in_range_exclusive returns true when value is strictly within bounds" do
+    assert Validator.decimal_in_range_exclusive(Decimal.new("7.5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  test "decimal_in_range_exclusive returns false when value equals bounds" do
+    refute Validator.decimal_in_range_exclusive(Decimal.new("5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.decimal_in_range_exclusive(Decimal.new("10"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
 end

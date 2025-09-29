@@ -98,4 +98,16 @@ defmodule Valpa.Predicate.Validator do
   def map_compare_decimal_keys(map, {op, k1, k2}) when op in [:>, :<, :>=, :<=, :==, :!=] do
     Valpa.Predicate.Compare.compare_decimal_keys(map, k1, k2, op)
   end
+
+  def decimal_in_range_inclusive(va, %{min: min, max: max}) do
+    match?(%Decimal{}, va) and
+      Decimal.compare(va, min) in [:eq, :gt] and
+      Decimal.compare(va, max) in [:eq, :lt]
+  end
+
+  def decimal_in_range_exclusive(va, %{min: min, max: max}) do
+    match?(%Decimal{}, va) and
+      Decimal.compare(va, min) == :gt and
+      Decimal.compare(va, max) == :lt
+  end
 end

@@ -215,4 +215,74 @@ defmodule Valpa.Predicate.MaybeTest do
     refute Validator.maybe_decimal(42.0)
     refute Validator.maybe_decimal("42.0")
   end
+
+  # Test maybe_decimal_in_range_inclusive/2
+  test "maybe_decimal_in_range_inclusive returns true when value is nil or within/equal to bounds" do
+    assert Validator.maybe_decimal_in_range_inclusive(nil, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.maybe_decimal_in_range_inclusive(Decimal.new("5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.maybe_decimal_in_range_inclusive(Decimal.new("10"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.maybe_decimal_in_range_inclusive(Decimal.new("7.5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  test "maybe_decimal_in_range_inclusive returns false when value is outside bounds" do
+    refute Validator.maybe_decimal_in_range_inclusive(Decimal.new("4.9"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.maybe_decimal_in_range_inclusive(Decimal.new("10.1"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  # Test maybe_decimal_in_range_exclusive/2
+  test "maybe_decimal_in_range_exclusive returns true when value is nil or strictly within bounds" do
+    assert Validator.maybe_decimal_in_range_exclusive(nil, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    assert Validator.maybe_decimal_in_range_exclusive(Decimal.new("7.5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
+
+  test "maybe_decimal_in_range_exclusive returns false when value equals bounds or outside bounds" do
+    refute Validator.maybe_decimal_in_range_exclusive(Decimal.new("5"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.maybe_decimal_in_range_exclusive(Decimal.new("10"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.maybe_decimal_in_range_exclusive(Decimal.new("4.9"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+
+    refute Validator.maybe_decimal_in_range_exclusive(Decimal.new("10.1"), %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           })
+  end
 end

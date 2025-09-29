@@ -165,4 +165,94 @@ defmodule Valpa.ValpaOnMapTest do
     assert map |> Valpa.decimal(:key) == ok(map)
     assert_error(%{key: 3.14} |> Valpa.decimal(:key), error(:decimal, 3.14))
   end
+
+  test "decimal_in_range_inclusive/2" do
+    map = %{key: Decimal.new("5")}
+
+    assert map
+           |> Valpa.decimal_in_range_inclusive(:key, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           }) == ok(map)
+
+    map = %{key: Decimal.new("10")}
+
+    assert map
+           |> Valpa.decimal_in_range_inclusive(:key, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           }) == ok(map)
+
+    map = %{key: Decimal.new("7.5")}
+
+    assert map
+           |> Valpa.decimal_in_range_inclusive(:key, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           }) == ok(map)
+
+    assert_error(
+      %{key: Decimal.new("4.9")}
+      |> Valpa.decimal_in_range_inclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_inclusive, Decimal.new("4.9"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+
+    assert_error(
+      %{key: Decimal.new("10.1")}
+      |> Valpa.decimal_in_range_inclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_inclusive, Decimal.new("10.1"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+  end
+
+  test "decimal_in_range_exclusive/2" do
+    map = %{key: Decimal.new("7.5")}
+
+    assert map
+           |> Valpa.decimal_in_range_exclusive(:key, %{
+             min: Decimal.new("5"),
+             max: Decimal.new("10")
+           }) == ok(map)
+
+    assert_error(
+      %{key: Decimal.new("5")}
+      |> Valpa.decimal_in_range_exclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_exclusive, Decimal.new("5"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+
+    assert_error(
+      %{key: Decimal.new("10")}
+      |> Valpa.decimal_in_range_exclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_exclusive, Decimal.new("10"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+
+    assert_error(
+      %{key: Decimal.new("4.9")}
+      |> Valpa.decimal_in_range_exclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_exclusive, Decimal.new("4.9"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+
+    assert_error(
+      %{key: Decimal.new("10.1")}
+      |> Valpa.decimal_in_range_exclusive(:key, %{min: Decimal.new("5"), max: Decimal.new("10")}),
+      error(:decimal_in_range_exclusive, Decimal.new("10.1"), %{
+        min: Decimal.new("5"),
+        max: Decimal.new("10")
+      })
+    )
+  end
 end
