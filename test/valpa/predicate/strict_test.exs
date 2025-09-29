@@ -250,4 +250,18 @@ defmodule Valpa.Predicate.StrictTest do
              max: Decimal.new("10")
            })
   end
+
+  # Test decimal_precision/2
+  test "decimal_precision returns true when decimal has allowed precision" do
+    assert Validator.decimal_precision(Decimal.new("3.14"), 2)
+    assert Validator.decimal_precision(Decimal.new("3.1"), 2)
+    assert Validator.decimal_precision(Decimal.new("3"), 2)
+    assert Validator.decimal_precision(Decimal.new("3"), 0)
+  end
+
+  test "decimal_precision returns false when decimal exceeds allowed precision" do
+    refute Validator.decimal_precision(Decimal.new("3.141"), 2)
+    refute Validator.decimal_precision(Decimal.new("3.140"), 2)
+    refute Validator.decimal_precision(Decimal.new("3.1"), 0)
+  end
 end

@@ -345,5 +345,41 @@ defmodule Valpa.ValpaMaybeTest do
         })
       )
     end
+
+    test "maybe_decimal_precision/2" do
+      # valid decimals with allowed precision
+      va = Decimal.new("3.14")
+      assert Valpa.maybe_decimal_precision(va, 2) == ok(va)
+
+      va = Decimal.new("3.1")
+      assert Valpa.maybe_decimal_precision(va, 2) == ok(va)
+
+      va = Decimal.new("3")
+      assert Valpa.maybe_decimal_precision(va, 2) == ok(va)
+
+      # nil value passes
+      va = nil
+      assert Valpa.maybe_decimal_precision(va, 2) == ok(nil)
+
+      # invalid precision
+      assert_error(
+        Valpa.maybe_decimal_precision(Decimal.new("3.141"), 2),
+        error(:maybe_decimal_precision, Decimal.new("3.141"), 2)
+      )
+
+      assert_error(
+        Valpa.maybe_decimal_precision(Decimal.new("3.140"), 2),
+        error(:maybe_decimal_precision, Decimal.new("3.140"), 2)
+      )
+
+      # edge case: zero precision
+      va = Decimal.new("3")
+      assert Valpa.maybe_decimal_precision(va, 0) == ok(va)
+
+      assert_error(
+        Valpa.maybe_decimal_precision(Decimal.new("3.1"), 0),
+        error(:maybe_decimal_precision, Decimal.new("3.1"), 0)
+      )
+    end
   end
 end

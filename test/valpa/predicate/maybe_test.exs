@@ -285,4 +285,19 @@ defmodule Valpa.Predicate.MaybeTest do
              max: Decimal.new("10")
            })
   end
+
+  # Test maybe_decimal_precision/2
+  test "maybe_decimal_precision returns true when value is nil or has allowed precision" do
+    assert Validator.maybe_decimal_precision(nil, 2)
+    assert Validator.maybe_decimal_precision(Decimal.new("3.14"), 2)
+    assert Validator.maybe_decimal_precision(Decimal.new("3.1"), 2)
+    assert Validator.maybe_decimal_precision(Decimal.new("3"), 2)
+    assert Validator.maybe_decimal_precision(Decimal.new("3"), 0)
+  end
+
+  test "maybe_decimal_precision returns false when decimal exceeds allowed precision" do
+    refute Validator.maybe_decimal_precision(Decimal.new("3.141"), 2)
+    refute Validator.maybe_decimal_precision(Decimal.new("3.140"), 2)
+    refute Validator.maybe_decimal_precision(Decimal.new("3.1"), 0)
+  end
 end

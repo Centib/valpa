@@ -255,4 +255,36 @@ defmodule Valpa.ValpaOnMapTest do
       })
     )
   end
+
+  test "decimal_precision/2" do
+    # valid decimals with allowed precision
+    map = %{key: Decimal.new("3.14")}
+    assert map |> Valpa.decimal_precision(:key, 2) == ok(map)
+
+    map = %{key: Decimal.new("3.1")}
+    assert map |> Valpa.decimal_precision(:key, 2) == ok(map)
+
+    map = %{key: Decimal.new("3")}
+    assert map |> Valpa.decimal_precision(:key, 2) == ok(map)
+
+    # invalid precision
+    assert_error(
+      %{key: Decimal.new("3.141")} |> Valpa.decimal_precision(:key, 2),
+      error(:decimal_precision, Decimal.new("3.141"), 2)
+    )
+
+    assert_error(
+      %{key: Decimal.new("3.140")} |> Valpa.decimal_precision(:key, 2),
+      error(:decimal_precision, Decimal.new("3.140"), 2)
+    )
+
+    # edge case: zero precision
+    map = %{key: Decimal.new("3")}
+    assert map |> Valpa.decimal_precision(:key, 0) == ok(map)
+
+    assert_error(
+      %{key: Decimal.new("3.1")} |> Valpa.decimal_precision(:key, 0),
+      error(:decimal_precision, Decimal.new("3.1"), 0)
+    )
+  end
 end

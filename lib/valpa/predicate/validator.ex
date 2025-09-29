@@ -110,4 +110,9 @@ defmodule Valpa.Predicate.Validator do
       Decimal.compare(va, min) == :gt and
       Decimal.compare(va, max) == :lt
   end
+
+  def decimal_precision(va, max_precision)
+      when is_integer(max_precision) and max_precision >= 0 do
+    is_struct(va, Decimal) and Decimal.scale(va) <= max_precision
+  end
 end

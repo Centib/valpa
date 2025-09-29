@@ -332,4 +332,40 @@ defmodule Valpa.ValpaMaybeOnMapTest do
       })
     )
   end
+
+  test "maybe_decimal_precision/2" do
+    # Valid decimal with allowed precision
+    map = %{key: Decimal.new("3.14")}
+    assert map |> Valpa.maybe_decimal_precision(:key, 2) == ok(map)
+
+    map = %{key: Decimal.new("3.1")}
+    assert map |> Valpa.maybe_decimal_precision(:key, 2) == ok(map)
+
+    map = %{key: Decimal.new("3")}
+    assert map |> Valpa.maybe_decimal_precision(:key, 2) == ok(map)
+
+    # nil values should pass
+    map = %{key: nil}
+    assert map |> Valpa.maybe_decimal_precision(:key, 2) == ok(map)
+
+    # Invalid precision
+    assert_error(
+      %{key: Decimal.new("3.141")} |> Valpa.maybe_decimal_precision(:key, 2),
+      error(:maybe_decimal_precision, Decimal.new("3.141"), 2)
+    )
+
+    assert_error(
+      %{key: Decimal.new("3.140")} |> Valpa.maybe_decimal_precision(:key, 2),
+      error(:maybe_decimal_precision, Decimal.new("3.140"), 2)
+    )
+
+    # Edge case: zero precision
+    map = %{key: Decimal.new("3")}
+    assert map |> Valpa.maybe_decimal_precision(:key, 0) == ok(map)
+
+    assert_error(
+      %{key: Decimal.new("3.1")} |> Valpa.maybe_decimal_precision(:key, 0),
+      error(:maybe_decimal_precision, Decimal.new("3.1"), 0)
+    )
+  end
 end
